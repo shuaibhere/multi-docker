@@ -1,0 +1,24 @@
+sudo: required
+language: generic
+
+services:
+  - docker
+
+before_install:
+  - docker build -t shuaibhere/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run -e CI=true shuaibhere/react-test npm test
+
+after_success:
+  - docker build -t shuaibhere/multi-client ./client
+  - docker build -t shuaibhere/multi-nginx ./nginx
+  - docker build -t shuaibhere/multi-server ./server
+  - docker build -t shuaibhere/multi-worker ./worker
+  # Log in to the docker CLI
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  # Take those images and push them to docker hub
+  - docker push shuaibhere/multi-client
+  - docker push shuaibhere/multi-nginx
+  - docker push shuaibhere/multi-server
+  - docker push shuaibhere/multi-worker
