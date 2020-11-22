@@ -22,3 +22,15 @@ after_success:
   - docker push shuaibhere/multi-nginx
   - docker push shuaibhere/multi-server
   - docker push shuaibhere/multi-worker
+
+deploy:
+  provider: elasticbeanstalk
+  region: us-east-2
+  app: multi-docker
+  env: MultiDocker-env
+  bucket_name: arn:aws:s3:::elasticbeanstalk-us-east-2-203112373948
+  bucket_path: docker-multi
+  on:
+    branch: master
+  access_key_id: $AWS_ACCESS_KEY
+  secrt_access_key: $AWS_SECRET_KEY
